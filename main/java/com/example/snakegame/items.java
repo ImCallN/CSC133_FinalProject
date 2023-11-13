@@ -28,7 +28,6 @@ public class items {
     void draw(Canvas canvas, Paint paint){
         canvas.drawBitmap(mBitmap,
                 getLoca().x * mSize, getLoca().y * mSize, paint);
-
     }
     //getters
     public Point getLoca() {
