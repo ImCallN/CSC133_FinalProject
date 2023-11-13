@@ -196,94 +196,81 @@ class Snake {
         return false;
     }
 
-    void draw(Canvas canvas, Paint paint) {
-
-        // Don't run this code if ArrayList has nothing in it
+  void draw(Canvas canvas, Paint paint) {
         if (!segmentLocations.isEmpty()) {
-            // All the code from this method goes here
-            // Draw the head
-            switch (heading) {
-                case RIGHT:
-                    canvas.drawBitmap(mBitmapHeadRight,
-                            segmentLocations.get(0).x
-                                    * mSegmentSize,
-                            segmentLocations.get(0).y
-                                    * mSegmentSize, paint);
-                    break;
-
-                case LEFT:
-                    canvas.drawBitmap(mBitmapHeadLeft,
-                            segmentLocations.get(0).x
-                                    * mSegmentSize,
-                            segmentLocations.get(0).y
-                                    * mSegmentSize, paint);
-                    break;
-
-                case UP:
-                    canvas.drawBitmap(mBitmapHeadUp,
-                            segmentLocations.get(0).x
-                                    * mSegmentSize,
-                            segmentLocations.get(0).y
-                                    * mSegmentSize, paint);
-                    break;
-
-                case DOWN:
-                    canvas.drawBitmap(mBitmapHeadDown,
-                            segmentLocations.get(0).x
-                                    * mSegmentSize,
-                            segmentLocations.get(0).y
-                                    * mSegmentSize, paint);
-                    break;
-            }
-
-            // Draw the snake body one block at a time
-            for (int i = 1; i < segmentLocations.size(); i++) {
-                canvas.drawBitmap(mBitmapBody,
-                        segmentLocations.get(i).x
-                                * mSegmentSize,
-                        segmentLocations.get(i).y
-                                * mSegmentSize, paint);
-            }
+            drawHead(canvas, paint);
+            drawBody(canvas, paint);
         }
     }
 
+    private void drawHead(Canvas canvas, Paint paint) {
+        Bitmap headBitmap = getHeadBitmap();
+        Point headLocation = segmentLocations.get(0);
+        canvas.drawBitmap(headBitmap, headLocation.x * mSegmentSize, headLocation.y * mSegmentSize, paint);
+    }
+
+    private Bitmap getHeadBitmap() {
+        switch (heading) {
+            case RIGHT:
+                return mBitmapHeadRight;
+            case LEFT:
+                return mBitmapHeadLeft;
+            case UP:
+                return mBitmapHeadUp;
+            case DOWN:
+                return mBitmapHeadDown;
+            default:
+                return mBitmapHeadRight;
+        }
+    }
+
+    private void drawBody(Canvas canvas, Paint paint) {
+        for (int i = 1; i < segmentLocations.size(); i++) {
+            Point bodyLocation = segmentLocations.get(i);
+            canvas.drawBitmap(mBitmapBody, bodyLocation.x * mSegmentSize, bodyLocation.y * mSegmentSize, paint);
+        }
+
 
     // Handle changing direction
-    void switchHeading(MotionEvent motionEvent) {
-
-        // Is the tap on the right hand side?
+  void switchHeading(MotionEvent motionEvent) {
         if (motionEvent.getX() >= halfWayPoint) {
-            switch (heading) {
-                // Rotate right
-                case UP:
-                    heading = Heading.RIGHT;
-                    break;
-                case RIGHT:
-                    heading = Heading.DOWN;
-                    break;
-                case DOWN:
-                    heading = Heading.LEFT;
-                    break;
-                case LEFT:
-                    heading = Heading.UP;
-                    break;
-            }
+            rotateRight();
         } else {
-            // Rotate left
-            switch (heading) {
-                case UP:
-                    heading = Heading.LEFT;
-                    break;
-                case LEFT:
-                    heading = Heading.DOWN;
-                    break;
-                case DOWN:
-                    heading = Heading.RIGHT;
-                    break;
-                case RIGHT:
-                    heading = Heading.UP;
-                    break;
-            }
+            rotateLeft();
+        }
+    }
+// New rotation methods for readability
+    private void rotateRight() {
+        switch (heading) {
+            case UP:
+                heading = Heading.RIGHT;
+                break;
+            case RIGHT:
+                heading = Heading.DOWN;
+                break;
+            case DOWN:
+                heading = Heading.LEFT;
+                break;
+            case LEFT:
+                heading = Heading.UP;
+                break;
+        }
+    }
+
+    private void rotateLeft() {
+        switch (heading) {
+            case UP:
+                heading = Heading.LEFT;
+                break;
+            case LEFT:
+                heading = Heading.DOWN;
+                break;
+            case DOWN:
+                heading = Heading.RIGHT;
+                break;
+            case RIGHT:
+                heading = Heading.UP;
+                break;
         }
     }
 }
