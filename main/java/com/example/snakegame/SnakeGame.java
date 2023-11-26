@@ -66,7 +66,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         // Call the constructors of our two game objects
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
 
-        mSnake = new Snake(context,
+        mSnake = Snake.getInstance();
+        mSnake.setBitMaps(context,
                 new Point(NUM_BLOCKS_WIDE,
                         mNumBlocksHigh),
                 blockSize);
@@ -153,7 +154,6 @@ class SnakeGame extends SurfaceView implements Runnable{
             audx.getMusic().pause();
             mPaused =true;
         }
-
     }
 
 
