@@ -68,9 +68,8 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         // Call the constructors of our two game objects
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
-
-        mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
-
+        mSnake = Snake.getInstance();
+        mSnake.setBitMaps(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
         stick = new Blocker(context,new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
 
     }
