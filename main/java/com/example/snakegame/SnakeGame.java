@@ -145,7 +145,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             mApple.spawn();
             stick.spawn();
             // Add to  mScore
-            mScore = ++;
+            mScore++;
             // Play a sound
             audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
         }
