@@ -15,8 +15,4 @@ class Apple extends items {
         // Resize the bitmap
         mBitmap = Bitmap.createScaledBitmap(mBitmap, s, s, false);
     }
-    public int score(int score){
-        score++;
-        return score;
-    }
 }
