@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import kotlinx.coroutines.internal.Segment;
 
 class Snake {
-
+    
+    private static Snake INSTANCE;
     // The location in the grid of all the segments
     private ArrayList<Point> segmentLocations;
 
@@ -46,11 +47,22 @@ class Snake {
     private Bitmap mBitmapBody;
 
 
-    Snake(Context context, Point mr, int ss) {
-
+    public static Snake getInstance()
+    {
+        if(INSTANCE == null)
+        {
+            INSTANCE = new Snake();
+        }
+        return INSTANCE;
+    }
+    private Snake()
+    {
         // Initialize our ArrayList
         segmentLocations = new ArrayList<>();
+    }
 
+    void setBitMaps(Context context, Point mr, int ss)
+    {
         // Initialize the segment size and movement
         // range from the passed in parameters
         mSegmentSize = ss;
