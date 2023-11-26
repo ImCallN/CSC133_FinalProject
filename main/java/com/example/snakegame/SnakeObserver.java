@@ -7,7 +7,7 @@ package com.example.snakegame;
 *    2. Check for snake collision and send out death if collision
 *    3. Play audio sounds for the snake
 *    4. 
-*/
+
 public class SnakeObserver {
 
     
@@ -42,3 +42,4 @@ public class SnakeObserver {
     }
     
 }
+*/
