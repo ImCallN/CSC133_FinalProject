@@ -60,10 +60,8 @@ public class Audio {
     public SoundPool getSoundPool() {
         return mSP;
     }
-
     public MediaPlayer getMusic() {return bgm;
     }
-
     public int getmCrashID() {
         return mCrashID;
     }

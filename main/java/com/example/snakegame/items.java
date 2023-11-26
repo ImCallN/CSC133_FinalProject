@@ -7,8 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import java.util.Random;
-
-//This is a simple factory design to create new objects such as pickup items
 public class items {
     private Point location = new Point();
    private Point mSpawnRange;
@@ -24,12 +22,11 @@ public class items {
     void spawn(){
         // Choose two random values and place the apple
         Random random = new Random();
-        location.x = random.nextInt(mSpawnRange.x -10) + 1;
+        location.x = random.nextInt(mSpawnRange.x + 10);
         location.y = random.nextInt(mSpawnRange.y - 10);
     }
     void draw(Canvas canvas, Paint paint){
-        canvas.drawBitmap(mBitmap,
-                getLoca().x * mSize, getLoca().y * mSize, paint);
+        canvas.drawBitmap(mBitmap, location.x * mSize, location.y * mSize, paint);
     }
     //getters
     public Point getLoca() {
