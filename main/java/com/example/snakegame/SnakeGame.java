@@ -46,6 +46,9 @@ class SnakeGame extends SurfaceView implements Runnable{
     //apple
     private Apple mApple;
 
+    //obstacle
+    private Blocker stick;
+
 
     // This is the constructor method that gets called
     // from SnakeActivity
@@ -66,11 +69,9 @@ class SnakeGame extends SurfaceView implements Runnable{
         // Call the constructors of our two game objects
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
 
-        mSnake = Snake.getInstance();
-        mSnake.setBitMaps(context,
-                new Point(NUM_BLOCKS_WIDE,
-                        mNumBlocksHigh),
-                blockSize);
+        mSnake = new Snake(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
+
+        stick = new Blocker(context,new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
 
     }
     // Called to start a new game
@@ -81,6 +82,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         // Get the apple ready for dinner
         mApple.spawn();
+        stick.spawn();
 
         // Reset the mScore
         mScore = 0;
@@ -137,23 +139,26 @@ class SnakeGame extends SurfaceView implements Runnable{
         // Move the snake
         mSnake.move();
 
-        // Did the head of the snake eat the apple?
+        // Did the head of the snake eat the apple?\
         if(mSnake.SnakeBody(mApple.getLoca())){
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
             mApple.spawn();
+            stick.spawn();
             // Add to  mScore
-            mScore = mScore + 1;
+            mScore = mApple.score(mScore);
             // Play a sound
             audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
         }
+
         // snake dead?
-        if (mSnake.detectDeath()) {
+        if (mSnake.detectDeath() || mSnake.SnakeBody(stick.getLoca())) {
             // Pause the game ready to start again
             audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
             audx.getMusic().pause();
-            mPaused =true;
+            mPaused = true;
         }
+
     }
 
 
@@ -174,9 +179,10 @@ class SnakeGame extends SurfaceView implements Runnable{
             // Draw the score
             mCanvas.drawText("Score: " + mScore, 20, 120, mPaint);
 
-            // Draw the apple and the snake
+            // Draw
             mApple.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
+            stick.draw(mCanvas, mPaint);
 
             // Draw some text while paused
             if(mPaused){
@@ -216,7 +222,6 @@ class SnakeGame extends SurfaceView implements Runnable{
 
             default:
                 break;
-
         }
         return true;
     }
