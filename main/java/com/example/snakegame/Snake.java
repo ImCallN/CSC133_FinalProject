@@ -11,7 +11,10 @@ import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
+//Singleton class
 class Snake {
+
+    private static Snake INSTANCE;
 
     // The location in the grid of all the segments
     private ArrayList<Point> segmentLocations;
@@ -43,12 +46,22 @@ class Snake {
     // A bitmap for the body
     private Bitmap mBitmapBody;
 
-
-    Snake(Context context, Point mr, int ss) {
-
+    //Singleton instance check
+    public static Snake getInstance()
+    {
+        if(INSTANCE == null)
+        {
+            INSTANCE = new Snake();
+        }
+        return INSTANCE;
+    }
+    private Snake() {
         // Initialize our ArrayList
         segmentLocations = new ArrayList<>();
+    }
 
+    void setBitMaps(Context context, Point mr, int ss)
+    {
         // Initialize the segment size and movement
         // range from the passed in parameters
         mSegmentSize = ss;
@@ -110,7 +123,10 @@ class Snake {
         // The halfway point across the screen in pixels
         // Used to detect which side of screen was pressed
         halfWayPoint = mr.x * ss / 2;
+
     }
+
+
 
     // Get the snake ready for a new game
     void reset(int w, int h) {
@@ -229,10 +245,11 @@ class Snake {
             Point bodyLocation = segmentLocations.get(i);
             canvas.drawBitmap(mBitmapBody, bodyLocation.x * mSegmentSize, bodyLocation.y * mSegmentSize, paint);
         }
+    }
 
 
     // Handle changing direction
-  void switchHeading(MotionEvent motionEvent) {
+    void switchHeading(MotionEvent motionEvent) {
         if (motionEvent.getX() >= halfWayPoint) {
             rotateRight();
         } else {
