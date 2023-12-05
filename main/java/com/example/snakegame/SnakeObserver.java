@@ -1,45 +1,75 @@
 package com.example.snakegame;
 
-//Class to pass info
-/*
-*    TODO:
-*    1. Move the snake and update the coordinates
-*    2. Check for snake collision and send out death if collision
-*    3. Play audio sounds for the snake
-*    4. 
+import android.graphics.Point;
+import android.view.MotionEvent;
+
+import java.util.ArrayList;
 
 public class SnakeObserver {
+    private Point moveRange;    //The size of the screen
 
-    
     //Constructor
-    public SnakeObserver()
+    public SnakeObserver(Point moveRange)
     {
-        
+        //Set the screen size so we can do bounds checking
+        this.moveRange = moveRange;
     }
 
-    //Detect if there's an object 
-    public detectCollision(Snake snake)
+    //Detect if the snake has collided with the borders or itself
+    public boolean detectCollision(Snake snake)
     {
-        
+        //Check for collision with the borders
+        if(snake.getHead().x == -1 || snake.getHead().x > moveRange.x || snake.getHead().y == -1 || snake.getHead().y > moveRange.y)
+        {
+            //Snake is dead, pass that to game
+            return true;
+        }
+
+        //Check for collision with itself with enhanced for loop
+        int counter = 0;
+        for(Point part : snake.getSegmentLocations())
+        {
+            //Added a counter so that it doesn't include it's head position in this iteration
+            if(snake.getHead().x == part.x && snake.getHead().y == part.y && counter != 0)
+            {
+                return true;
+            }
+            counter++;
+        }
+        return false;
     }
 
-    //Returns the coordinates of the snake head for collision
-    public getSnakeCoords(Snake snake)
+    //Detects the collision of a snake object and an item object
+    public boolean detectCollision(Snake snake, items item)
     {
-        
+        if(snake.getHead().x == item.getLoca().x && snake.getHead().y == item.getLoca().y)
+        {
+            return true;
+        }
+        return false;
     }
 
-    //Returns the coordinates of said item
-    public getItemCoords(items item)
+    //Spawn the snake in
+    public void spawnSnake(Snake snake, int width, int height)
     {
-        
+        snake.reset(width, height);
     }
 
-    //plays specified audio file
-    public playAudio(Audio audio)
+    public void growSnake(Snake snake)
     {
-        
+        snake.addSegment();
     }
-    
+
+    public void switchHeading(Snake snake, MotionEvent motionEvent)
+    {
+        snake.switchHeading(motionEvent);
+    }
+
+    //Passes info to the snake that it should move
+    public void moveSnake(Snake snake)
+    {
+        snake.move();
+    }
+
 }
-*/
+

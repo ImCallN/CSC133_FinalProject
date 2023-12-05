@@ -1,0 +1,11 @@
+TODO
+- Make sure the apple and obstacle don't spawn off screen or in each other
+- Final score does not appear after you die
+- Snake can't turn left on current iteration
+- Finish ItemManager
+- Spawn in golden apple (Possibly based on score)
+- Change animation of snake (Flip new image back and forth between alternating segments)
+- Show borders
+- Change Background color
+- Possibly change the obstacle image
+- Save scores to a file and read the high scores in the menu
