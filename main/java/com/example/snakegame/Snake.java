@@ -176,17 +176,38 @@ class Snake {
  public ArrayList<Point> getSegmentLocations(){
         return segmentLocations;
  }
+    boolean detectDeath() {
+        // Has the snake died?
+        boolean dead = false;
 
- //Returns the location of the head
- public Point getHead()
- {
-     return segmentLocations.get(0);
- }
+        // Hit any of the screen edges
+        if (segmentLocations.get(0).x == -1 || segmentLocations.get(0).x > mMoveRange.x || segmentLocations.get(0).y == -1 || segmentLocations.get(0).y > mMoveRange.y) {
+            dead = true;
+        }
 
- public void addSegment()
- {
-     segmentLocations.add(new Point(-10,-10));
- }
+        // Eaten itself?
+        for (int i = segmentLocations.size() - 1; i > 0; i--) {
+            // Have any of the sections collided with the head
+            if (segmentLocations.get(0).x == segmentLocations.get(i).x &&
+                    segmentLocations.get(0).y == segmentLocations.get(i).y) {
+
+                dead = true;
+            }
+
+        }
+        return dead;
+    }
+
+    boolean SnakeBody(Point l) {
+        if (segmentLocations.get(0).x == l.x &&
+                segmentLocations.get(0).y == l.y) {
+
+            //It makes the snake grow
+            segmentLocations.add(new Point(-10, -10));
+            return true;
+        }
+        return false;
+    }
 
     void draw(Canvas canvas, Paint paint) {
 

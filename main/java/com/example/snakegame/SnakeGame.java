@@ -48,16 +48,15 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     //apple
     private Apple mApple;
-
+    private GoldenApple Gold;
     //obstacle
     private Blocker stick;
+    int direct;
 
     //Screens
     private DrawTitle myTitle;
     private DrawGameOver myGameOver;
     private DrawPauseScreen myPaused;
-
-    private SnakeObserver snakeObs;
 
     //Which screen should be displayed
     private boolean mNewGame = true;
@@ -84,14 +83,13 @@ class SnakeGame extends SurfaceView implements Runnable{
         mSurfaceHolder = getHolder();
         mPaint = new Paint();
 
-        // Call the constructors of our objects
+        // Call the constructors of our two game objects
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
+        Gold = new GoldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
         mSnake = Snake.getInstance();
         mSnake.setBitMaps(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
-
-        snakeObs = new SnakeObserver(new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh));
-
         stick = new Blocker(context,new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
+        direct=1;
 
         //Initialize pause button rect
         pauseButton = new Rect(0,0,0,0);
@@ -106,11 +104,12 @@ class SnakeGame extends SurfaceView implements Runnable{
     public void newGame() {
 
         // reset the snake
-        snakeObs.spawnSnake(mSnake, NUM_BLOCKS_WIDE, mNumBlocksHigh);
+        mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
+
         // Get the apple ready for dinner
+
         mApple.spawn();
         stick.spawn();
-
         // Reset the mScore
         mScore = 0;
 
@@ -172,23 +171,39 @@ class SnakeGame extends SurfaceView implements Runnable{
     // Update all the game objects
     public void update() {
         // Move the snake
-        snakeObs.moveSnake(mSnake);
+        mSnake.move();
 
-        // Did the head of the snake eat the apple?\
-        if(snakeObs.detectCollision(mSnake, mApple)){
+        //Blocker movement
+        if(stick.getLoca().x == NUM_BLOCKS_WIDE-3) {
+            direct *= -1;
+        }else if(stick.getLoca().x == 1){
+            direct *= -1;
+        }
+        stick.move(direct);
+
+//        // Did the head of the snake eat the apple?\
+        if(mSnake.SnakeBody(mApple.getLoca())){
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
-            snakeObs.growSnake(mSnake);
             mApple.spawn();
-
+            stick.spawn();
             // Add to  mScore
             mScore++;
             // Play a sound
             audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
         }
-
+            Gold.spawn();
+        if(mSnake.SnakeBody(Gold.getLoca())){
+            // This reminds me of Edge of Tomorrow.
+            // One day the apple will be ready!
+            Gold.spawn();
+            // Add to  mScore
+            mScore+=4;
+            // Play a sound
+            audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
+        }
         // snake dead?
-        if (snakeObs.detectCollision(mSnake)|| snakeObs.detectCollision(mSnake,stick)) {
+        if (mSnake.detectDeath() || mSnake.SnakeBody(stick.getLoca())) {
             // Pause the game ready to start again
             audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
             audx.getMusic().pause();
@@ -225,6 +240,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
             // Draw
             mApple.draw(mCanvas, mPaint);
+            Gold.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
             stick.draw(mCanvas, mPaint);
 
@@ -262,7 +278,7 @@ class SnakeGame extends SurfaceView implements Runnable{
                     return true;
                 }
                 // Let the Snake class handle control input
-                snakeObs.switchHeading(mSnake, motionEvent);
+                mSnake.switchHeading(motionEvent);
                 break;
 
             default:

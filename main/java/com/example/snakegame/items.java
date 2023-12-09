@@ -22,7 +22,7 @@ public class items {
     void spawn(){
         // Choose two random values and place the apple
         Random random = new Random();
-        location.x = random.nextInt(mSpawnRange.x - 10);
+        location.x = random.nextInt(mSpawnRange.x + 10);
         location.y = random.nextInt(mSpawnRange.y - 10);
     }
     void draw(Canvas canvas, Paint paint){
