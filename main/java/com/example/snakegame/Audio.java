@@ -19,6 +19,8 @@ public class Audio {
     private int mEat_ID;
     private int mCrashID;
 
+    private int ochID;
+
     //private int soundfile[]; //might be used for storing audio
 
     Audio(Context context) {
@@ -47,6 +49,9 @@ public class Audio {
             descriptor = assetManager.openFd("snake_death.ogg");
             mCrashID = mSP.load(descriptor, 0);
 
+            descriptor = assetManager.openFd("Minecraft-sound.pm3");
+            ochID = mSP.load(descriptor, 0);
+
         } catch (IOException e) {
             // Error
         }
@@ -68,5 +73,6 @@ public class Audio {
     public int getmEat_ID() {
         return mEat_ID;
     }
+    public int getOchID() {return ochID;}
 }
 

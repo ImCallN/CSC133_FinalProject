@@ -48,6 +48,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     //apple
     private Apple mApple;
+    private GoldenApple gApple;
 
     //obstacle
     private Blocker stick;
@@ -58,6 +59,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     private DrawPauseScreen myPaused;
 
     private SnakeObserver snakeObs;
+    private Poison trap;
+
 
     //Which screen should be displayed
     private boolean mNewGame = true;
@@ -86,10 +89,12 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         // Call the constructors of our objects
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
+
+        gApple = new GoldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = Snake.getInstance();
         mSnake.setBitMaps(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
-
         snakeObs = new SnakeObserver(new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh));
+        trap = new Poison(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
 
         stick = new Blocker(context,new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
 
@@ -110,6 +115,11 @@ class SnakeGame extends SurfaceView implements Runnable{
         // Get the apple ready for dinner
         mApple.spawn();
         stick.spawn();
+        trap.spawn();
+
+
+
+
 
         // Reset the mScore
         mScore = 0;
@@ -168,23 +178,56 @@ class SnakeGame extends SurfaceView implements Runnable{
     }
 
     //GAMEPLAY
+    int direction = 1;
 
+    boolean gAppleSpawn = true;
     // Update all the game objects
     public void update() {
         // Move the snake
         snakeObs.moveSnake(mSnake);
-
+        if(gAppleSpawn && mScore % 5 == 0 && mScore != 0)
+        {
+            gApple.spawn();
+            gAppleSpawn = false;
+        }
         // Did the head of the snake eat the apple?\
         if(snakeObs.detectCollision(mSnake, mApple)){
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
             snakeObs.growSnake(mSnake);
             mApple.spawn();
-
+            stick.spawn();
+            trap.spawn();
             // Add to  mScore
             mScore++;
             // Play a sound
             audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
+        }
+        if(snakeObs.detectCollision(mSnake, gApple))
+        {
+            gAppleSpawn = true;
+            gApple.setLocation(new Point(-10, -10));
+            snakeObs.growSnake(mSnake);
+            mScore+=3;
+        }
+        if(snakeObs.detectCollision(mSnake, trap))
+        {
+            if(mScore <= 1)
+            {
+                audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
+                mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
+                audx.getMusic().pause();
+                mGameOver = true;
+            }
+
+            else
+            {
+                mScore -= 2;
+                audx.getMusic().pause();
+                trap.spawn();
+            }
+
+
         }
 
         // snake dead?
@@ -194,7 +237,6 @@ class SnakeGame extends SurfaceView implements Runnable{
             audx.getMusic().pause();
             mGameOver = true;
         }
-
     }
 
     // Do all the drawing
@@ -227,6 +269,8 @@ class SnakeGame extends SurfaceView implements Runnable{
             mApple.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
             stick.draw(mCanvas, mPaint);
+            gApple.draw(mCanvas, mPaint);
+            trap.draw(mCanvas, mPaint);
 
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);
@@ -238,9 +282,18 @@ class SnakeGame extends SurfaceView implements Runnable{
     public boolean onTouchEvent(MotionEvent motionEvent) {
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
-                int i = motionEvent.getActionIndex();
-                int x = (int) motionEvent.getX(i);
-                int y = (int) motionEvent.getY(i);
+                int i = 0;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO) {
+                    i = motionEvent.getActionIndex();
+                }
+                int x = 0;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ECLAIR) {
+                    x = (int) motionEvent.getX(i);
+                }
+                int y = 0;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ECLAIR) {
+                    y = (int) motionEvent.getY(i);
+                }
 
                 if(pauseButton.contains(x,y)){//checks if user tapped within pause Rect
                     pause();

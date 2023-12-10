@@ -16,4 +16,8 @@ public class Blocker extends items {
         mBitmap = BitmapFactory.decodeResource(t.getResources(),R.drawable.engi);
         mBitmap = Bitmap.createScaledBitmap(mBitmap,size,size,false);
     }
+    public void move(int direction)
+    {
+        getLoca().x += direction;
+    }
 }

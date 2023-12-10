@@ -25,11 +25,16 @@ public class items {
         location.x = random.nextInt(mSpawnRange.x - 10);
         location.y = random.nextInt(mSpawnRange.y - 10);
     }
+
     void draw(Canvas canvas, Paint paint){
         canvas.drawBitmap(mBitmap, location.x * mSize, location.y * mSize, paint);
     }
     //getters
     public Point getLoca() {
         return location;
+    }
+    void setLocation(Point location)
+    {
+        this.location = location;
     }
 }
