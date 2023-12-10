@@ -176,7 +176,7 @@ class Snake {
  public ArrayList<Point> getSegmentLocations(){
         return segmentLocations;
  }
-    boolean detectDeath() {
+    boolean detectDeath(Point enemy) {
         // Has the snake died?
         boolean dead = false;
 
@@ -185,25 +185,36 @@ class Snake {
             dead = true;
         }
 
+        if(detectcol(enemy)){
+            dead =true;
+        }
+
         // Eaten itself?
         for (int i = segmentLocations.size() - 1; i > 0; i--) {
             // Have any of the sections collided with the head
             if (segmentLocations.get(0).x == segmentLocations.get(i).x &&
-                    segmentLocations.get(0).y == segmentLocations.get(i).y) {
-
+                    segmentLocations.get(0).y == segmentLocations.get(i).y
+            || enemy.x == segmentLocations.get(i).x &&
+                    enemy.y == segmentLocations.get(i).y) {
                 dead = true;
             }
-
         }
         return dead;
     }
-
-    boolean SnakeBody(Point l) {
-        if (segmentLocations.get(0).x == l.x &&
-                segmentLocations.get(0).y == l.y) {
-
+boolean detectcol(Point a){
+    if (segmentLocations.get(0).x == a.x &&
+            segmentLocations.get(0).y == a.y) {
+        return true;
+    }else{
+        return false;
+    }
+}
+    boolean SnakeBody(Point l, int lunch) {
+        if (detectcol(l)) {
             //It makes the snake grow
-            segmentLocations.add(new Point(-10, -10));
+            for(int s=0;s<=lunch-1;s++) {
+                segmentLocations.add(new Point(-10, -10));
+            }
             return true;
         }
         return false;

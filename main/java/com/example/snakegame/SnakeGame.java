@@ -109,6 +109,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         // Get the apple ready for dinner
 
         mApple.spawn();
+        Gold.spawn();
         stick.spawn();
         // Reset the mScore
         mScore = 0;
@@ -175,14 +176,14 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         //Blocker movement
         if(stick.getLoca().x == NUM_BLOCKS_WIDE-3) {
-            direct *= -1;
+            direct=-1;
         }else if(stick.getLoca().x == 1){
-            direct *= -1;
+            direct=1;
         }
         stick.move(direct);
 
 //        // Did the head of the snake eat the apple?\
-        if(mSnake.SnakeBody(mApple.getLoca())){
+        if(mSnake.SnakeBody(mApple.getLoca(),1)){
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
             mApple.spawn();
@@ -192,8 +193,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             // Play a sound
             audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
         }
-            Gold.spawn();
-        if(mSnake.SnakeBody(Gold.getLoca())){
+        if(mSnake.SnakeBody(Gold.getLoca(),4)){
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
             Gold.spawn();
@@ -203,7 +203,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
         }
         // snake dead?
-        if (mSnake.detectDeath() || mSnake.SnakeBody(stick.getLoca())) {
+        if (mSnake.detectDeath(stick.getLoca())) {
             // Pause the game ready to start again
             audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
             audx.getMusic().pause();
