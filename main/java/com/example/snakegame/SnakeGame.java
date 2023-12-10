@@ -147,8 +147,10 @@ class SnakeGame extends SurfaceView implements Runnable{
             //Determine what to display
             if(mNewGame)
                 myTitle.title();
-            else if(mGameOver)
+            else if(mGameOver) {
+                myGameOver.setScore(mScore);
                 myGameOver.gameOver();
+            }
             else
                 drawGame();
         }
@@ -217,6 +219,7 @@ class SnakeGame extends SurfaceView implements Runnable{
                 audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
                 mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
                 audx.getMusic().pause();
+                mScore = 0;
                 mGameOver = true;
             }
 
