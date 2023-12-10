@@ -35,7 +35,5 @@ public class DrawPauseScreen extends DrawScreen{
         }
     }
 
-    public void setScore(int score){
-        myScore = score;
-    }
+
 }

@@ -34,5 +34,7 @@ public class DrawScreen{
         return textCenter;
     }
 
-
+    public void setScore(int score){
+        myScore = score;
+    }
 }
