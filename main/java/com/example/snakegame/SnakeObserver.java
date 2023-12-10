@@ -48,7 +48,7 @@ public class SnakeObserver {
         }
         return false;
     }
-    public boolean detecttailCollision(Snake snake, items item)
+    public boolean detectTailCollision(Snake snake, items item)
     {
       for(int i = snake.getSegmentLocations().size()-1;i > 0;i--) {
           if(item.getLoca().x == snake.getSegmentLocations().get(i).x && item.getLoca().y == snake.getSegmentLocations().get(i).y){
