@@ -52,6 +52,7 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     //obstacle
     private Blocker stick;
+    private int direct;
 
     //Screens
     private DrawTitle myTitle;
@@ -97,6 +98,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         trap = new Poison(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
 
         stick = new Blocker(context,new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
+        direct=1;
 
         //Initialize pause button rect
         pauseButton = new Rect(0,0,0,0);
@@ -183,6 +185,15 @@ class SnakeGame extends SurfaceView implements Runnable{
     public void update() {
         // Move the snake
         snakeObs.moveSnake(mSnake);
+
+        //Blocker movement
+        if (stick.getLoca().x == NUM_BLOCKS_WIDE - 3) {
+            direct = -1;
+        } else if (stick.getLoca().x == 1) {
+            direct = 1;
+        }
+        stick.move(direct);
+
         if(gAppleSpawn && mScore % 5 == 0 && mScore != 0)
         {
             gApple.spawn();
@@ -205,11 +216,12 @@ class SnakeGame extends SurfaceView implements Runnable{
         {
             gAppleSpawn = true;
             gApple.setLocation(new Point(-10, -10));
-            snakeObs.growSnake(mSnake, 2);
-            mScore+=3;
+            snakeObs.growSnake(mSnake, 4);
+            mScore+=4;
         }
         if(snakeObs.detectCollision(mSnake, trap))
         {
+
             if(mScore <= 1)
             {
                 audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
@@ -223,6 +235,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             {
                 mScore -= 2;
                 //audx.getMusic().play();
+                snakeObs.cutSnake(mSnake,2);
                 trap.spawn();
             }
 
@@ -230,7 +243,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         }
 
         // snake dead?
-        if (snakeObs.detectCollision(mSnake)|| snakeObs.detectCollision(mSnake,stick)) {
+        if (snakeObs.detectCollision(mSnake)|| snakeObs.detectCollision(mSnake,stick)|| snakeObs.detecttailCollision(mSnake,stick)){
             // Pause the game ready to start again
             audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
             audx.getMusic().pause();
