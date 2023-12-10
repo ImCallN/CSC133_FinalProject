@@ -19,6 +19,8 @@ public class Audio {
     private int mEat_ID;
     private int mCrashID;
 
+    private int ochID;
+
     //private int soundfile[]; //might be used for storing audio
 
     Audio(Context context) {
@@ -47,10 +49,14 @@ public class Audio {
             descriptor = assetManager.openFd("snake_death.ogg");
             mCrashID = mSP.load(descriptor, 0);
 
+            descriptor = assetManager.openFd("Minecraft-sound.mp3");
+            ochID = mSP.load(descriptor, 0);
+
         } catch (IOException e) {
             // Error
         }
 
+        //BGM
         bgm = new MediaPlayer();
         bgm = MediaPlayer.create(context, R.raw.elevator_music);
         bgm.setVolume(1,1);
@@ -68,5 +74,10 @@ public class Audio {
     public int getmEat_ID() {
         return mEat_ID;
     }
+
+    public int GetochID() {
+        return ochID;
+    }
+
 }
 

@@ -51,7 +51,9 @@ class SnakeGame extends SurfaceView implements Runnable{
     private GoldenApple Gold;
     //obstacle
     private Blocker stick;
-    int direct;
+    private int direct;
+
+    private Poison trap;
 
     //Screens
     private DrawTitle myTitle;
@@ -90,6 +92,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         mSnake.setBitMaps(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
         stick = new Blocker(context,new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
         direct=1;
+        trap = new Poison(context,new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
 
         //Initialize pause button rect
         pauseButton = new Rect(0,0,0,0);
@@ -111,6 +114,8 @@ class SnakeGame extends SurfaceView implements Runnable{
         mApple.spawn();
         Gold.spawn();
         stick.spawn();
+        trap.spawn();
+
         // Reset the mScore
         mScore = 0;
 
@@ -175,37 +180,48 @@ class SnakeGame extends SurfaceView implements Runnable{
         mSnake.move();
 
         //Blocker movement
-        if(stick.getLoca().x == NUM_BLOCKS_WIDE-3) {
-            direct=-1;
-        }else if(stick.getLoca().x == 1){
-            direct=1;
+        if (stick.getLoca().x == NUM_BLOCKS_WIDE - 3) {
+            direct = -1;
+        } else if (stick.getLoca().x == 1) {
+            direct = 1;
         }
         stick.move(direct);
 
 //        // Did the head of the snake eat the apple?\
-        if(mSnake.SnakeBody(mApple.getLoca(),1)){
+        if (mSnake.SnakeBody(mApple.getLoca(), 1)) {
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
             mApple.spawn();
             stick.spawn();
+            trap.spawn();
             // Add to  mScore
             mScore++;
             // Play a sound
             audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
         }
-        if(mSnake.SnakeBody(Gold.getLoca(),4)){
+        if (mSnake.SnakeBody(Gold.getLoca(), 4)) {
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
             Gold.spawn();
             // Add to  mScore
-            mScore+=4;
+            mScore += 4;
             // Play a sound
             audx.getSoundPool().play(audx.getmEat_ID(), 1, 1, 0, 0, 1);
+        }
+        if(mSnake.Bodycut(trap.getLoca(), 0) && mScore <=1 ){
+            audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
+            mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
+            audx.getMusic().pause();
+            mGameOver = true;
+        }else if (mSnake.Bodycut(trap.getLoca(), 2)) {
+            mScore -= 2;
+            audx.getSoundPool().play(audx.GetochID(), 1, 1, 0, 0, 1);
         }
         // snake dead?
         if (mSnake.detectDeath(stick.getLoca())) {
             // Pause the game ready to start again
             audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
+            mSnake.reset(NUM_BLOCKS_WIDE, mNumBlocksHigh);
             audx.getMusic().pause();
             mGameOver = true;
         }
@@ -243,6 +259,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             Gold.draw(mCanvas, mPaint);
             mSnake.draw(mCanvas, mPaint);
             stick.draw(mCanvas, mPaint);
+            trap.draw(mCanvas, mPaint);
 
             // Unlock the mCanvas and reveal the graphics for this frame
             mSurfaceHolder.unlockCanvasAndPost(mCanvas);

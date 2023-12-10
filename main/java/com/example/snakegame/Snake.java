@@ -220,6 +220,16 @@ boolean detectcol(Point a){
         return false;
     }
 
+    boolean Bodycut(Point y, int xxx) {
+        if (detectcol(y)) {
+            //It makes the snake grow
+            for(int s=0;s<=xxx-1;s++) {
+                segmentLocations.remove(segmentLocations.size()-xxx);
+            }
+            return true;
+        }
+        return false;
+    }
     void draw(Canvas canvas, Paint paint) {
 
         // Don't run this code if ArrayList has nothing in it
