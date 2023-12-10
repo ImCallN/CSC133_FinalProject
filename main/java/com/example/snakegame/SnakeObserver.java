@@ -55,9 +55,12 @@ public class SnakeObserver {
         snake.reset(width, height);
     }
 
-    public void growSnake(Snake snake)
+    public void growSnake(Snake snake, int size)
     {
-        snake.addSegment();
+        for(int i = 0; i < size; i++)
+        {
+            snake.addSegment();
+        }
     }
 
     public void switchHeading(Snake snake, MotionEvent motionEvent)

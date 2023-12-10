@@ -117,10 +117,6 @@ class SnakeGame extends SurfaceView implements Runnable{
         stick.spawn();
         trap.spawn();
 
-
-
-
-
         // Reset the mScore
         mScore = 0;
 
@@ -196,7 +192,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         if(snakeObs.detectCollision(mSnake, mApple)){
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
-            snakeObs.growSnake(mSnake);
+            snakeObs.growSnake(mSnake, 1);
             mApple.spawn();
             stick.spawn();
             trap.spawn();
@@ -209,7 +205,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         {
             gAppleSpawn = true;
             gApple.setLocation(new Point(-10, -10));
-            snakeObs.growSnake(mSnake);
+            snakeObs.growSnake(mSnake, 2);
             mScore+=3;
         }
         if(snakeObs.detectCollision(mSnake, trap))
@@ -226,7 +222,7 @@ class SnakeGame extends SurfaceView implements Runnable{
             else
             {
                 mScore -= 2;
-                audx.getMusic().pause();
+                //audx.getMusic().play();
                 trap.spawn();
             }
 
