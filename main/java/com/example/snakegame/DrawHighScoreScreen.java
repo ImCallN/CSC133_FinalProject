@@ -34,13 +34,29 @@ public class DrawHighScoreScreen extends DrawScreen{
             myBitmapBackButton = Bitmap.createScaledBitmap(myBitmapBackButton,width,height,true);
             myCanvas.drawBitmap(myBitmapBackButton,padding,padding,myPaint);
 
-            // Draw Game Title
-            myPaint.setTextSize(200);
+            // Draw Leaderboard Title
+            myPaint.setTextSize(150);
             int titleCenter = calculateCenter("Leaderboard");
-            myCanvas.drawText("Leaderboard", titleCenter, 250, myPaint);
+            myCanvas.drawText("Leaderboard", titleCenter, 180, myPaint);
 
+            myPaint.setTextSize(100);
+            int subTitleCenter = calculateCenter("Top 5 Scores");
+            myCanvas.drawText("Top 5 Scores", subTitleCenter, 300,myPaint);
+
+            //Draw HighScores already formatted
+            drawLeaderBoard();
+            
             // Unlock the mCanvas and reveal the graphics for this frame
             mySurfaceHolder.unlockCanvasAndPost(myCanvas);
+        }
+    }
+
+    private void drawLeaderBoard(){
+        myPaint.setTextSize(80);
+        for( int i = 1; i < 6; i++){
+            //i+10 is just a place holder
+            String line = String.format("%30s %15s",i + ".", i+10);
+            myCanvas.drawText(line,0,320+(i*130),myPaint);
         }
     }
 
