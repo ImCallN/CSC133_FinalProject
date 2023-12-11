@@ -52,20 +52,21 @@ class SnakeGame extends SurfaceView implements Runnable{
 
     //obstacle
     private Blocker stick;
-    private int direct;
 
     //Screens
     private DrawTitle myTitle;
     private DrawGameOver myGameOver;
     private DrawPauseScreen myPaused;
+    private DrawHighScoreScreen myHighScore;
 
     private SnakeObserver snakeObs;
     private Poison trap;
 
-
     //Which screen should be displayed
     private boolean mNewGame = true;
     private boolean mGameOver = false;
+    private boolean onTitle = true;
+    private boolean onScore = false;
 
     //pause button
     Bitmap myBitmapPauseButton;
@@ -82,6 +83,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         // How many blocks of the same size will fit into the height
         mNumBlocksHigh = size.y / blockSize;
 
+        //Audio
         audx = new Audio(context);
 
         // Initialize the drawing objects
@@ -90,23 +92,21 @@ class SnakeGame extends SurfaceView implements Runnable{
 
         // Call the constructors of our objects
         mApple = new Apple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
-
         gApple = new GoldenApple(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
         mSnake = Snake.getInstance();
         mSnake.setBitMaps(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
         snakeObs = new SnakeObserver(new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh));
         trap = new Poison(context, new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh), blockSize);
-
         stick = new Blocker(context,new Point(NUM_BLOCKS_WIDE, mNumBlocksHigh),blockSize);
-        direct=1;
 
-        //Initialize pause button rect
+        //Initialize pause button
         pauseButton = new Rect(0,0,0,0);
 
         //Initialize screens
-        myTitle = new DrawTitle(mPaint,mSurfaceHolder,0);
+        myTitle = new DrawTitle(context,mPaint,mSurfaceHolder);
         myGameOver = new DrawGameOver(mPaint, mSurfaceHolder, mScore);
         myPaused = new DrawPauseScreen(mPaint,mSurfaceHolder,mScore);
+        myHighScore = new DrawHighScoreScreen(context,mPaint,mSurfaceHolder);
 
     }
     // Called to start a new game
@@ -118,6 +118,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         mApple.spawn();
         stick.spawn();
         trap.spawn();
+
 
         // Reset the mScore
         mScore = 0;
@@ -143,8 +144,12 @@ class SnakeGame extends SurfaceView implements Runnable{
             }
 
             //Determine what to display
-            if(mNewGame)
-                myTitle.title();
+            if(mNewGame) {
+               if(!onScore)
+                   myTitle.title();
+               else
+                   myHighScore.highScoreScreen();
+            }
             else if(mGameOver) {
                 myGameOver.setScore(mScore);
                 myGameOver.gameOver();
@@ -185,15 +190,6 @@ class SnakeGame extends SurfaceView implements Runnable{
     public void update() {
         // Move the snake
         snakeObs.moveSnake(mSnake);
-
-        //Blocker movement
-        if (stick.getLoca().x == NUM_BLOCKS_WIDE - 3) {
-            direct = -1;
-        } else if (stick.getLoca().x == 1) {
-            direct = 1;
-        }
-        stick.move(direct);
-
         if(gAppleSpawn && mScore % 5 == 0 && mScore != 0)
         {
             gApple.spawn();
@@ -203,7 +199,7 @@ class SnakeGame extends SurfaceView implements Runnable{
         if(snakeObs.detectCollision(mSnake, mApple)){
             // This reminds me of Edge of Tomorrow.
             // One day the apple will be ready!
-            snakeObs.growSnake(mSnake, 1);
+            snakeObs.growSnake(mSnake);
             mApple.spawn();
             stick.spawn();
             trap.spawn();
@@ -216,12 +212,11 @@ class SnakeGame extends SurfaceView implements Runnable{
         {
             gAppleSpawn = true;
             gApple.setLocation(new Point(-10, -10));
-            snakeObs.growSnake(mSnake, 4);
-            mScore+=4;
+            snakeObs.growSnake(mSnake);
+            mScore+=3;
         }
         if(snakeObs.detectCollision(mSnake, trap))
         {
-
             if(mScore <= 1)
             {
                 audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
@@ -234,16 +229,14 @@ class SnakeGame extends SurfaceView implements Runnable{
             else
             {
                 mScore -= 2;
-                //audx.getMusic().play();
-                snakeObs.cutSnake(mSnake,2);
+                audx.getMusic().pause();
                 trap.spawn();
             }
-
 
         }
 
         // snake dead?
-        if (snakeObs.detectCollision(mSnake)|| snakeObs.detectCollision(mSnake,stick)|| snakeObs.detecttailCollision(mSnake,stick)){
+        if (snakeObs.detectCollision(mSnake)|| snakeObs.detectCollision(mSnake,stick)) {
             // Pause the game ready to start again
             audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
             audx.getMusic().pause();
@@ -307,29 +300,42 @@ class SnakeGame extends SurfaceView implements Runnable{
                     y = (int) motionEvent.getY(i);
                 }
 
-                if(pauseButton.contains(x,y)){//checks if user tapped within pause Rect
+                if(pauseButton.contains(x,y) && !mNewGame){//checks if user tapped within pause Rect
                     pause();
                     // Don't want to process snake direction for this tap
+                    return true;
+                }
+                else if(myTitle.getPlayRect().contains(x,y) && onTitle){
+                    onTitle = false;
+                    mNewGame = false;
+                    newGame();
+                    return true;
+                }
+                else if(myTitle.getScoreRect().contains(x,y) && onTitle){
+                    onTitle=false;
+                    onScore = true;
+                    return true;
+                }
+                else if(myHighScore.getBackRect().contains(x,y) && onScore){
+                    onScore = false;
+                    onTitle = true;
                     return true;
                 }
                 else if(!mPlaying){
                     resume();
                     return true;
                 }
-                else if (mNewGame) {
-                    mNewGame = false;
-                    newGame();
-                    return true;
-                }
                 else if(mGameOver){
+                    onTitle = true;
                     mNewGame = true;
                     mGameOver = false;
                     return true;
                 }
-                // Let the Snake class handle control input
-                snakeObs.switchHeading(mSnake, motionEvent);
-                break;
-
+                else if(!mNewGame && !onScore) {
+                    // Let the Snake class handle control input
+                    snakeObs.switchHeading(mSnake, motionEvent);
+                    break;
+                }
             default:
                 break;
         }
@@ -344,14 +350,12 @@ class SnakeGame extends SurfaceView implements Runnable{
         //Draw Pause Screen
         myPaused.setScore(mScore);
         myPaused.pause();
-
         try {
             mThread.join();
         } catch (InterruptedException e) {
             // Error
         }
     }
-
 
     // Start the thread
     public void resume() {

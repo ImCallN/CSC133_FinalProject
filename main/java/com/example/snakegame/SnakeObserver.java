@@ -48,15 +48,6 @@ public class SnakeObserver {
         }
         return false;
     }
-    public boolean detectTailCollision(Snake snake, items item)
-    {
-      for(int i = snake.getSegmentLocations().size()-1;i > 0;i--) {
-          if(item.getLoca().x == snake.getSegmentLocations().get(i).x && item.getLoca().y == snake.getSegmentLocations().get(i).y){
-              return true;
-          }
-      }
-        return false;
-    }
 
     //Spawn the snake in
     public void spawnSnake(Snake snake, int width, int height)
@@ -64,18 +55,9 @@ public class SnakeObserver {
         snake.reset(width, height);
     }
 
-    public void growSnake(Snake snake, int size)
+    public void growSnake(Snake snake)
     {
-        for(int i = 0; i < size; i++)
-        {
-            snake.addSegment();
-        }
-    }
-    public void cutSnake(Snake snake, int tail){
-        for(int i = 0; i <= tail-1; i++)
-        {
-            snake.removeSegment(tail);
-        }
+        snake.addSegment();
     }
 
     public void switchHeading(Snake snake, MotionEvent motionEvent)

@@ -187,10 +187,7 @@ class Snake {
  {
      segmentLocations.add(new Point(-10,-10));
  }
-    public void removeSegment(int tail)
-    {
-        segmentLocations.remove(segmentLocations.size()-tail);
-    }
+
     void draw(Canvas canvas, Paint paint) {
 
         // Don't run this code if ArrayList has nothing in it
