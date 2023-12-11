@@ -54,8 +54,9 @@ public class DrawHighScoreScreen extends DrawScreen{
     private void drawLeaderBoard(){
         myPaint.setTextSize(80);
         for( int i = 1; i < 6; i++){
-            //i+10 is just a place holder
-            String line = String.format("%30s %15s",i + ".", i+10);
+            //output is just a placeholder
+            int output = 20 - i;
+            String line = String.format("%30s %15s",i + ".", output);
             myCanvas.drawText(line,0,320+(i*130),myPaint);
         }
     }
