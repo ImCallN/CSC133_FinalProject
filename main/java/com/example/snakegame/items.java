@@ -11,6 +11,7 @@ public class items {
     private Point location = new Point();
    private Point mSpawnRange;
    private int mSize;
+   private int scoreAmount;
      Bitmap mBitmap;
         items(Context context, Point sr, int s) {
             mSpawnRange = sr;
