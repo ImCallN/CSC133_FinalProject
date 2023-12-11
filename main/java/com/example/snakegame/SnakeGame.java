@@ -58,6 +58,7 @@ class SnakeGame extends SurfaceView implements Runnable{
     private DrawTitle myTitle;
     private DrawGameOver myGameOver;
     private DrawPauseScreen myPaused;
+    private DrawHighScoreScreen myHighScore;
 
     private SnakeObserver snakeObs;
     private Poison trap;
@@ -66,6 +67,8 @@ class SnakeGame extends SurfaceView implements Runnable{
     //Which screen should be displayed
     private boolean mNewGame = true;
     private boolean mGameOver = false;
+    private boolean onTitle = true;
+    private boolean onScore = false;
 
     //pause button
     Bitmap myBitmapPauseButton;
@@ -104,9 +107,10 @@ class SnakeGame extends SurfaceView implements Runnable{
         pauseButton = new Rect(0,0,0,0);
 
         //Initialize screens
-        myTitle = new DrawTitle(mPaint,mSurfaceHolder,0);
+        myTitle = new DrawTitle(context,mPaint,mSurfaceHolder);
         myGameOver = new DrawGameOver(mPaint, mSurfaceHolder, mScore);
         myPaused = new DrawPauseScreen(mPaint,mSurfaceHolder,mScore);
+        myHighScore = new DrawHighScoreScreen(context,mPaint,mSurfaceHolder);
 
     }
     // Called to start a new game
@@ -143,8 +147,12 @@ class SnakeGame extends SurfaceView implements Runnable{
             }
 
             //Determine what to display
-            if(mNewGame)
-                myTitle.title();
+            if(mNewGame) {
+                if(!onScore)
+                    myTitle.title();
+                else
+                    myHighScore.highScoreScreen();
+            }
             else if(mGameOver) {
                 myGameOver.setScore(mScore);
                 myGameOver.gameOver();
@@ -239,11 +247,10 @@ class SnakeGame extends SurfaceView implements Runnable{
                 trap.spawn();
             }
 
-
         }
 
         // snake dead?
-        if (snakeObs.detectCollision(mSnake)|| snakeObs.detectCollision(mSnake,stick)|| snakeObs.detecttailCollision(mSnake,stick)){
+        if (snakeObs.detectCollision(mSnake)|| snakeObs.detectCollision(mSnake,stick)|| snakeObs.detectTailCollision(mSnake,stick)){
             // Pause the game ready to start again
             audx.getSoundPool().play(audx.getmCrashID(), 1, 1, 0, 0, 1);
             audx.getMusic().pause();
@@ -307,29 +314,42 @@ class SnakeGame extends SurfaceView implements Runnable{
                     y = (int) motionEvent.getY(i);
                 }
 
-                if(pauseButton.contains(x,y)){//checks if user tapped within pause Rect
+                if(pauseButton.contains(x,y) && !mNewGame){//checks if user tapped within pause Rect
                     pause();
                     // Don't want to process snake direction for this tap
+                    return true;
+                }
+                else if(myTitle.getPlayRect().contains(x,y) && onTitle){
+                    onTitle = false;
+                    mNewGame = false;
+                    newGame();
+                    return true;
+                }
+                else if(myTitle.getScoreRect().contains(x,y) && onTitle){
+                    onTitle=false;
+                    onScore = true;
+                    return true;
+                }
+                else if(myHighScore.getBackRect().contains(x,y) && onScore){
+                    onScore = false;
+                    onTitle = true;
                     return true;
                 }
                 else if(!mPlaying){
                     resume();
                     return true;
                 }
-                else if (mNewGame) {
-                    mNewGame = false;
-                    newGame();
-                    return true;
-                }
                 else if(mGameOver){
+                    onTitle = true;
                     mNewGame = true;
                     mGameOver = false;
                     return true;
                 }
-                // Let the Snake class handle control input
-                snakeObs.switchHeading(mSnake, motionEvent);
-                break;
-
+                else if(!mNewGame && !onScore) {
+                    // Let the Snake class handle control input
+                    snakeObs.switchHeading(mSnake, motionEvent);
+                    break;
+                }
             default:
                 break;
         }
@@ -351,7 +371,6 @@ class SnakeGame extends SurfaceView implements Runnable{
             // Error
         }
     }
-
 
     // Start the thread
     public void resume() {

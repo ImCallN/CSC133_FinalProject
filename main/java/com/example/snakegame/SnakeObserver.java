@@ -50,11 +50,11 @@ public class SnakeObserver {
     }
     public boolean detectTailCollision(Snake snake, items item)
     {
-      for(int i = snake.getSegmentLocations().size()-1;i > 0;i--) {
-          if(item.getLoca().x == snake.getSegmentLocations().get(i).x && item.getLoca().y == snake.getSegmentLocations().get(i).y){
-              return true;
-          }
-      }
+        for(int i = snake.getSegmentLocations().size()-1;i > 0;i--) {
+            if(item.getLoca().x == snake.getSegmentLocations().get(i).x && item.getLoca().y == snake.getSegmentLocations().get(i).y){
+                return true;
+            }
+        }
         return false;
     }
 
@@ -90,4 +90,3 @@ public class SnakeObserver {
     }
 
 }
-
